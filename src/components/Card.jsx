@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useCart, useDispatchCart } from './ContextReducer';
-
+import React, { useEffect, useRef, useState } from "react";
+import { useCart, useDispatchCart } from "./ContextReducer";
 
 export default function Card(props) {
   const dispatch = useDispatchCart();
@@ -12,50 +11,65 @@ export default function Card(props) {
   const options = props.options || {};
   const PriceOptions = Object.keys(options);
 
-  const [qty, setQty] = useState(1);
-  const [size, setSize] = useState("");
-  const priceRef = useRef(null); // Initialize priceRef
+  const [qty, setQty] = useState(1); // Quantity state
+  const [size, setSize] = useState(PriceOptions[0] || ""); // Initialize `size` with the first option
+  const priceRef = useRef(null); // Reference for size selector
 
   // Calculate the final price
   const finalPrice = size && options[size] ? qty * parseInt(options[size]) : 0;
 
   useEffect(() => {
-    // Set the initial size value using priceRef
     if (priceRef.current) {
-      setSize(priceRef.current.value);
+      setSize(priceRef.current.value); // Initialize size from the dropdown
     }
   }, []);
 
   const handleAddToCart = async () => {
-    const itemData = {
-      type: "ADD",
-      id: id,
-      img: img,
-      name: name,
-      price: finalPrice,
-      qty: qty,
-      size: size || PriceOptions[0],
-    };
+    // Check if the item is already in the cart
+    const existingItem = data.find((item) => item.id === id && item.size === size);
 
-    await dispatch(itemData);
-    console.log("Dispatched Item:", itemData); // Debugging
-    console.log("Updated Cart State:", data);
+    if (existingItem) {
+      // If the item with the same size exists, update its quantity and price
+      await dispatch({
+        type: "UPDATE",
+        id: id,
+        price: finalPrice,
+        qty: qty,
+      });
+    } else {
+      // Add a new item to the cart
+      await dispatch({
+        type: "ADD",
+        id: id,
+        img: img,
+        name: name,
+        price: finalPrice,
+        qty: qty,
+        size: size || PriceOptions[0], // Default to the first size option
+      });
+    }
   };
 
   return (
     <div>
       <div
         className="card mt-3"
-        style={{ width: '18rem', backgroundColor: 'transparent', maxHeight: '600px' }}
+        style={{
+          width: "18rem",
+          backgroundColor: "transparent",
+          maxHeight: "600px",
+        }}
       >
         <img
           src={img}
           className="card-img-top"
           alt={name || "Food Item"}
+          style={{ maxHeight: "200px", objectFit: "cover" }}
         />
         <div className="card-body">
           <h5 className="card-title">{name}</h5>
           <div className="container w-100">
+            {/* Quantity Selector */}
             <select
               className="m-2 h-100 bg-success rounded"
               onChange={(e) => setQty(parseInt(e.target.value))}
@@ -66,6 +80,8 @@ export default function Card(props) {
                 </option>
               ))}
             </select>
+
+            {/* Size Selector */}
             <select
               className="m-2 h-100 bg-success rounded"
               ref={priceRef}
@@ -77,9 +93,9 @@ export default function Card(props) {
                 </option>
               ))}
             </select>
-            <div className="d-inline h-100 fs-5">
-              ₹{finalPrice}/-
-            </div>
+
+            {/* Display Final Price */}
+            <div className="d-inline h-100 fs-5">₹{finalPrice}/-</div>
           </div>
           <hr />
           <button

@@ -1,6 +1,6 @@
 import React from "react";
 import { useCart, useDispatchCart } from "../components/ContextReducer";
-import Delete from "@mui/icons-material/Delete";  // Correct import
+import Delete from "@mui/icons-material/Delete"; // Correct import
 
 export default function Cart() {
   let data = useCart();
@@ -14,23 +14,32 @@ export default function Cart() {
     );
   }
 
-  // const handleCheckOut = async () => {
-  //   let userEmail = localStorage.getItem("userEmail");
-  //   let response = await fetch("http://localhost:5000/api/auth/orderData", {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify({
-  //       order_data: data,
-  //       email: userEmail,
-  //       order_date: new Date().toDateString()
-  //     })
-  //   });
-  //   if (response.status === 200) {
-  //     dispatch({ type: "DROP" });
-  //   }
-  // };
+  const handleCheckOut = async () => {
+    let userEmail = localStorage.getItem("userEmail");
+    try {
+      let response = await fetch("http://localhost:5000/api/auth/orderData", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          order_data: data,
+          email: userEmail,
+          order_date: new Date().toDateString()
+        })
+      });
+
+      if (response.ok) {
+        alert("Order placed successfully!");
+        dispatch({ type: "DROP" }); // Clear the cart after checkout
+      } else {
+        alert("Failed to place the order. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during checkout:", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
 
   let totalPrice = data.reduce((total, food) => total + food.price, 0);
 
@@ -47,7 +56,7 @@ export default function Cart() {
             <th scope='col'></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody style={{ color: "white" }}>
           {data.map((food, index) => (
             <tr key={index}>
               <th scope='row'>{index + 1}</th>
@@ -57,7 +66,7 @@ export default function Cart() {
               <td>{food.price}</td>
               <td>
                 <button type="button" className="btn p-0" onClick={() => dispatch({ type: "REMOVE", index })}>
-                  <Delete />
+                  <Delete style={{ color: "white" }} />
                 </button>
               </td>
             </tr>
