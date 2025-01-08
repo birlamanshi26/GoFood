@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const MONGO_URL =
-  "mongodb+srv://gofood:26septM%40NSI@cluster0.m5khq.mongodb.net/gofoodmern?retryWrites=true&w=majority&appName=Cluster0";
+  "mongodb+srv://gofood:26septM%40NSI@cluster0.m5khq.mongodb.net/gofoodmern?retryWrites=true&w=majority";
 
 const connectDB = async () => {
   try {
@@ -12,11 +12,13 @@ const connectDB = async () => {
     });
     console.log("MongoDB connected successfully");
 
-    // Fetch data from the "food_items" collection
-    const foodItemsCollection = mongoose.connection.db.collection("food_items");
-    const foodCategoryCollection = mongoose.connection.db.collection("foodCategory");
+    // Access the database directly
+    const db = mongoose.connection.db;
 
-    // Fetch food items
+    // Fetch data from the "food_items" and "foodCategory" collections
+    const foodItemsCollection = db.collection("food_items");
+    const foodCategoryCollection = db.collection("foodCategory");
+
     const foodItems = await foodItemsCollection.find({}).toArray();
     const foodCategories = await foodCategoryCollection.find({}).toArray();
 
@@ -33,7 +35,15 @@ const connectDB = async () => {
 
 module.exports = connectDB;
 
-// To test the connection, you can run the following script:
+// Test the connection when running this file directly
 if (require.main === module) {
-  connectDB();
+  connectDB()
+    .then(() => {
+      console.log("Database connection test successful");
+      process.exit(0); // Exit the process with success
+    })
+    .catch((error) => {
+      console.error("Database connection test failed:", error.message);
+      process.exit(1); // Exit the process with failure
+    });
 }

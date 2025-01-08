@@ -1,13 +1,25 @@
 import React, { useState } from 'react';
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
-  let navigate = useNavigate()
+  let navigate = useNavigate();
+
+  // Helper function to store user data in local storage
+  const storeUserData = (email, authToken) => {
+    localStorage.setItem("userEmail", email);
+    localStorage.setItem("authToken", authToken);
+
+    console.log(
+      "User data stored in local storage:",
+      { email: localStorage.getItem("userEmail"), authToken: localStorage.getItem("authToken") }
+    );
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const response = await fetch("http://localhost:3000/api/loginuser", {
         method: "POST",
@@ -16,25 +28,31 @@ export default function Login() {
         },
         body: JSON.stringify(credentials),
       });
-  
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const json = await response.json();
       console.log(json);
 
       if (json.success) {
         alert("Login successful");
-        localStorage.setItem("authToken",json.authToken);
-        console.log(localStorage.getItem("authToken"));
+
+        // Use helper function to store data
+        storeUserData(credentials.email, json.authToken);
+
+        // Navigate to home page
         navigate("/");
-        // Redirect or perform post-login actions
       } else {
-        alert(json.message);
+        alert(json.message || "Login failed");
       }
     } catch (error) {
       console.error("Error during login:", error);
-      alert("An error occurred while logging in.");
+      alert("An error occurred while logging in. Please try again later.");
     }
   };
-  
+
   // Handle input changes
   const onChange = (event) => {
     setCredentials({ ...credentials, [event.target.name]: event.target.value });
@@ -42,7 +60,7 @@ export default function Login() {
 
   return (
     <div>
-      <div className='container'>
+      <div className="container">
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
@@ -54,6 +72,8 @@ export default function Login() {
               onChange={onChange}
               id="exampleInputEmail1"
               aria-describedby="emailHelp"
+              placeholder="Enter your email"
+              required
             />
             <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
           </div>
@@ -66,9 +86,10 @@ export default function Login() {
               value={credentials.password}
               onChange={onChange}
               id="exampleInputPassword1"
+              placeholder="Enter your password"
+              required
             />
           </div>
-
           <button type="submit" className="btn btn-success">Submit</button>
           <Link to="/createuser" className="m-3 btn btn-danger">I'm a new user</Link>
         </form>

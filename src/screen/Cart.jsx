@@ -17,30 +17,34 @@ export default function Cart() {
   const handleCheckOut = async () => {
     let userEmail = localStorage.getItem("userEmail");
     try {
-      let response = await fetch("http://localhost:5000/api/auth/orderData", {
-        method: 'POST',
+      let response = await fetch("http://localhost:3000/api/orderdata", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           order_data: data,
           email: userEmail,
-          order_date: new Date().toDateString()
-        })
+          order_date: new Date().toDateString(),
+        }),
       });
-
-      if (response.ok) {
-        alert("Order placed successfully!");
-        dispatch({ type: "DROP" }); // Clear the cart after checkout
-      } else {
-        alert("Failed to place the order. Please try again.");
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error response:", errorData);
+        alert(`Failed to place the order: ${errorData.message || "Unknown error"}`);
+        return;
       }
+  
+      const responseData = await response.json();
+      alert(responseData.message || "Order placed successfully!");
+      dispatch({ type: "DROP" });
     } catch (error) {
       console.error("Error during checkout:", error);
       alert("An error occurred. Please try again.");
     }
   };
-
+  
   let totalPrice = data.reduce((total, food) => total + food.price, 0);
 
   return (

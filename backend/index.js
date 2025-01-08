@@ -21,6 +21,7 @@ app.use(express.json());
 // API Routes
 app.use("/api", require("./Routes/CreateUser"));
 app.use("/api", require("./Routes/DisplayData"));
+app.use("/api", require("./Routes/OrderData"));
 // Sample Route
 app.get('/', (req, res) => {
   res.send('Hello World');

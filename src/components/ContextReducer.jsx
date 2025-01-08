@@ -34,6 +34,9 @@ const reducer = (state, action) => {
           return arr;
         })
         return arr;
+      case "DROP" :
+        let emptyArray = []
+        return emptyArray 
     default:
       console.error("Unknown action type:", action.type);
       return state; // Always return the current state for unknown actions
