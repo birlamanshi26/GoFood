@@ -69,6 +69,12 @@ export default function Home() {
           <div className="carousel-item">
             <img src="https://images.mrcook.app/recipe-image/01922de8-8871-71c0-947a-99a06af71b7c" className="d-block w-100 " style={{ filter: "brightness(30%)" }} alt="..." />
           </div>
+          <div className="carousel-item">
+            <img src="https://cdn.britannica.com/35/225835-050-A5CC289A/Indian-one-pot-meal-for-party.jpg" className="d-block w-100 " style={{ filter: "brightness(30%)" }} alt="..." />
+          </div>
+          <div className="carousel-item">
+            <img src="https://t4.ftcdn.net/jpg/06/20/48/73/360_F_620487372_6eYL1S63J1TyhW24PJkNqjg70sCKN0pN.jpg" className="d-block w-100 " style={{ filter: "brightness(30%)" }} alt="..." />
+          </div>
 
         </div>
         <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">

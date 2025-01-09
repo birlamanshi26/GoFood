@@ -28,6 +28,7 @@ export default function Cart() {
           order_date: new Date().toDateString(),
         }),
       });
+
   
       if (!response.ok) {
         const errorData = await response.json();

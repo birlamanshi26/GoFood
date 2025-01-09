@@ -31,4 +31,18 @@ router.post("/orderdata", async (req, res) => {
   }
 });
 
+router.post("/myorderdata", async (req, res) => {
+  try {
+    console.log("fetching")
+    const myData = await Order.findOne({ "email": req.body.email });
+    console.log("data is ", myData)
+    if (myData) {
+      res.json({ orderData: myData });
+    } else {
+      res.status(404).json({ error: "No orders found for this user" });
+    }
+  } catch (error) {
+    res.status(500).send("Server Error: " + error.message);
+  }
+});
 module.exports = router;
